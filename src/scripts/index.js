@@ -1,165 +1,91 @@
-import "../pages/index.css"; // добавили импорт главного файла стилей
-import { initialCards } from "./cards.js"; // импорт массива карточек
+import "../pages/index.css"; 
+import { initialCards } from "./cards.js"; 
+import { createPlacesItem, deletePlacesItem, likeCard } from "../components/card.js";
+import { openModal, closeModal, clickClosed } from "../components/modal.js";
 
-// @todo: Темплейт карточки
-const cardTemplate = document.querySelector("#card-template").content;
-
-// @todo: DOM узлы
+// DOM узлы
 const content = document.querySelector(".content");
 const placesList = content.querySelector(".places__list");
 
-// @todo: Функция создания карточки
-function createPlacesItem(elem, functionDelete) {
-  const placesItem = cardTemplate
-    .querySelector(".places__item")
-    .cloneNode(true);
-  const cardImage = placesItem.querySelector(".card__image");
-  const cardTitle = placesItem.querySelector(".card__title");
-  const deleteCardButton = placesItem.querySelector(".card__delete-button");
-  cardImage.src = elem.link;
-  cardImage.alt = elem.name;
-  cardTitle.textContent = elem.name;
+// Кнопки и модальные окна
+const editProfileButton = content.querySelector(".profile__edit-button");
+const addNewCardButton = content.querySelector(".profile__add-button");
+const editProfilePopup = document.querySelector(".popup_type_edit");
+const addNewCardPopup = document.querySelector(".popup_type_new-card");
+const lookImagePopup = document.querySelector(".popup_type_image");
 
-  deleteCardButton.addEventListener("click", () => functionDelete(placesItem));
+// Формы
+const formEditProfile = document.forms["edit-profile"];
+const formAddNewCard = document.forms["new-place"];
 
-  return placesItem;
-}
+// Для редактирование профиля
+const profileTitle = content.querySelector(".profile__title");
+const profileDescription = content.querySelector(".profile__description");
 
-// @todo: Функция удаления карточки
-function deletePlacesItem(elem) {
-  elem.remove();
-}
+// Для показа изображения 
+const popupImage = document.querySelector(".popup__image");
+const popupCaption = document.querySelector(".popup__caption");
 
-// @todo: Вывести карточки на страницу
+// Вывести массив карточек на страницу
 function renderPlacesItem() {
-  initialCards.forEach((elem) =>
-    placesList.append(createPlacesItem(elem, deletePlacesItem))
-  );
+  initialCards.forEach(elem => {
+    placesList.append(createPlacesItem(elem, deletePlacesItem, likeCard, lookImage))
+  });
 }
 
 renderPlacesItem();
 
-// анимация
-// const popups = document.querySelectorAll('.popup');
-// popups.forEach((elem) => {
-//   console.log(elem);
-//   elem.classList.toggle('popup_is-animated');
-// })
+// Добавление класса анимации модальным окнам
+const allPopups = document.querySelectorAll(".popup");
+allPopups.forEach(elem => elem.classList.add("popup_is-animated"));
 
-
-// const editProfileButton = content.querySelector(".profile__edit-button");
-const addNewCardButton = content.querySelector(".profile__add-button");
-// const editProfilePopup = document.querySelector(".popup_type_edit");
-const addNewCardPopup = document.querySelector(".popup_type_new-card");
-const lookImagePopup = document.querySelector('.popup_type_image');
-
-// Редактирование профиля
-// editProfileButton.addEventListener("click", function () {
-//   openModal(editProfilePopup);
-//   console.log('click edit');
-  // const profileTitle = document.querySelector('.profile__title');
-  // const profileDescription = document.querySelector('.profile__description');
-  // const formEditProfile = document.forms['edit-profile'];
-  // const nameInput = formEditProfile.name;
-  // const descriptionInput = formEditProfile.description;
-  
-  // nameInput.value = profileTitle.textContent;
-  // descriptionInput.value = profileDescription.textContent;
-  
-  // function handleFormSubmit(evt) {
-  //   evt.preventDefault();
-  //   profileTitle.textContent = nameInput.value;
-  //   profileDescription.textContent = descriptionInput.value;
-  //   closeModal(editProfilePopup);
-  // }
-
-  // formEditProfile.addEventListener('submit', handleFormSubmit);
-// });
-
-// Добавление новой карточки
-addNewCardButton.addEventListener("click", function () {
-  openModal(addNewCardPopup);
-  console.log('click add');
-  // const formAddNewCard = document.forms['new-place'];
-
-  // function handleFormSubmit(evt) {
-  //   evt.preventDefault();
-  //   const newCard = {
-  //     name: formAddNewCard['place-name'].value,
-  //     link: formAddNewCard.link.value
-  //   };
-  //   console.log(newCard);
-  //   placesList.prepend(createPlacesItem(newCard, deletePlacesItem));
-  //   formAddNewCard.reset();
-  //   closeModal(addNewCardPopup);
-  // }
-
-  // formAddNewCard.addEventListener('submit', handleFormSubmit);
-});
-
-// Просмотр фотографии
-placesList.addEventListener('click', function(evt){
-  if (evt.target.classList.contains("card__image")) {
-    openModal(lookImagePopup);
-  }
-})
-
-// Функция открытия модального окна
-// function openModal(popup) {
-  // console.log('открыл');
-  // popup.classList.add("popup_is-opened");
-  // document.addEventListener("keydown", function (evt) {
-  //   if (evt.keyCode === 27) {
-  //     closeModal(popup);
-  //     console.log('Esc');
-  //   }
-  // });
-  // popup.addEventListener("click", function (evt) {
-  //   if (evt.target.classList.contains("popup__close")) {
-  //     closeModal(popup);
-  //     console.log('X');
-  //   }
-    // if (evt.target === evt.currentTarget) {
-    //   closeModal(popup);
-    //   console.log('overlay');
-    // }
-  // });
-// }
-
-// Функция закрытия модального окна 
-// function closeModal(evt) {
-//   evt.classList.remove("popup_is-opened");
-//   console.log('закрыл');
-// }
-
-
-
-
-
-const editProfileButton = content.querySelector(".profile__edit-button");
-const editProfilePopup = document.querySelector(".popup_type_edit");
-
-// Редактирование профиля
+// Слушатель нажатия кнопки "редактировать профиль"
 editProfileButton.addEventListener("click", function () {
   openModal(editProfilePopup);
-  console.log('click edit');
+  formEditProfile.name.value = profileTitle.textContent;
+  formEditProfile.description.value = profileDescription.textContent;
+  editProfilePopup.addEventListener("click", clickClosed);
 });
 
-// Функция открытия модального окна
-function openModal(popup) {
-  console.log('открыл');
-  popup.classList.add("popup_is-opened");
-
-  popup.addEventListener("click", function (evt) {
-    if (evt.target.classList.contains("popup__close")) {
-      closeModal(popup);
-      console.log('X');
-    }
-  });
+// Изменение информации из формы
+function editHandleFormSubmit(evt) {
+  evt.preventDefault();
+  profileTitle.textContent = formEditProfile.name.value;
+  profileDescription.textContent = formEditProfile.description.value;
+  closeModal(editProfilePopup);
 }
 
-// Функция закрытия модального окна 
-function closeModal(evt) {
-  evt.classList.remove("popup_is-opened");
-  console.log('закрыл');
+// Слушатель события формы редактирования профиля
+formEditProfile.addEventListener("submit", editHandleFormSubmit);
+
+// Слушатель нажатия кнопки "добавить новую карточку"
+addNewCardButton.addEventListener("click", function () {
+  openModal(addNewCardPopup);
+  addNewCardPopup.addEventListener("click", clickClosed);
+});
+
+// Добавление новой карточки из формы
+function addHandleFormSubmit(evt) {
+  evt.preventDefault();
+  const newCard = {
+    name: formAddNewCard["place-name"].value,
+    link: formAddNewCard.link.value,
+  };
+  placesList.prepend(createPlacesItem(newCard, deletePlacesItem, likeCard, lookImage));
+  formAddNewCard.reset();
+  closeModal(addNewCardPopup);
+}
+
+// Слушатель события формы добавления новой карточки
+formAddNewCard.addEventListener("submit", addHandleFormSubmit);
+
+// Просмотр фотографии
+function lookImage(evt) {
+  if (evt.target.classList.contains("card__image")) {
+    openModal(lookImagePopup);
+    popupImage.src = evt.target.src;
+    popupImage.alt = evt.target.alt;
+    popupCaption.textContent = evt.target.alt;
+    lookImagePopup.addEventListener("click", clickClosed);
+  }
 }
