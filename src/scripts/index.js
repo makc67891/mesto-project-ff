@@ -27,9 +27,12 @@ const profileDescription = content.querySelector(".profile__description");
 const popupImage = document.querySelector(".popup__image");
 const popupCaption = document.querySelector(".popup__caption");
 
+// Массив функций карточки 
+const cardFunctions = { deletePlacesItem, likeCard, lookImage }
+
 // Вставка карточки append / prepend
 function renderCard(item, method = "prepend") {
-  const cardElement = createPlacesItem(item, deletePlacesItem, likeCard, lookImage);
+  const cardElement = createPlacesItem(item, cardFunctions);
   placesList[method](cardElement);
 }
 

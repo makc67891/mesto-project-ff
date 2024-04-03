@@ -2,7 +2,7 @@
 const cardTemplate = document.querySelector("#card-template").content;
 
 // Функция создания карточки
-export function createPlacesItem(elem, functionDelete, likeCard, lookImage) {
+export function createPlacesItem(elem, functions) {
   const placesItem = cardTemplate.querySelector(".places__item").cloneNode(true);
   const cardImage = placesItem.querySelector(".card__image");
   const cardTitle = placesItem.querySelector(".card__title");
@@ -12,9 +12,9 @@ export function createPlacesItem(elem, functionDelete, likeCard, lookImage) {
   cardImage.alt = elem.name;
   cardTitle.textContent = elem.name;
 
-  cardLike.addEventListener("click", likeCard);
-  cardImage.addEventListener("click", lookImage);
-  deleteCardButton.addEventListener("click", () => functionDelete(placesItem));
+  cardLike.addEventListener("click", functions.likeCard);
+  cardImage.addEventListener("click", functions.lookImage);
+  deleteCardButton.addEventListener("click", () => functions.deletePlacesItem(placesItem));
 
   return placesItem;
 }
