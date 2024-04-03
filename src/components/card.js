@@ -6,13 +6,14 @@ export function createPlacesItem(elem, functionDelete, likeCard, lookImage) {
   const placesItem = cardTemplate.querySelector(".places__item").cloneNode(true);
   const cardImage = placesItem.querySelector(".card__image");
   const cardTitle = placesItem.querySelector(".card__title");
+  const cardLike = placesItem.querySelector('.card__like-button');
   const deleteCardButton = placesItem.querySelector(".card__delete-button");
   cardImage.src = elem.link;
   cardImage.alt = elem.name;
   cardTitle.textContent = elem.name;
 
-  placesItem.addEventListener("click", likeCard);
-  placesItem.addEventListener("click", lookImage);
+  cardLike.addEventListener("click", likeCard);
+  cardImage.addEventListener("click", lookImage);
   deleteCardButton.addEventListener("click", () => functionDelete(placesItem));
 
   return placesItem;
