@@ -20,7 +20,7 @@ export function createPlacesItem(elem, functions, profileId) {
   cardLike.addEventListener("click", functions.likeCard);
   cardImage.addEventListener("click", functions.lookImage);
   deleteCardButton.addEventListener("click", () => functions.confirmRemove(placesItem));
-  showDeleteButton(elem, deleteCardButton);
+  showDeleteButton(elem, profileId, deleteCardButton);
 
   if(elem.likes.some((like) => like._id === profileId)){
     cardLike.classList.add('card__like-button_is-active')
@@ -44,18 +44,24 @@ export function likeCard(evt) {
         evt.target.classList.remove("card__like-button_is-active");
         likeCounter.textContent = result.likes.length;
       })
+      .catch((err) => {
+        console.log(err);
+      });
   } else {
     requestAddLike(item)
     .then((result) => {
       evt.target.classList.add("card__like-button_is-active");
       likeCounter.textContent = result.likes.length;
     })
+    .catch((err) => {
+      console.log(err);
+    });
   }
 }
 
 // Функция показа кнопки удаления
-function showDeleteButton(elem, deleteButton){
-  if(elem.owner._id === '984c177f863031700b1bd5eb'){
+function showDeleteButton(elem, profileId, deleteButton){
+  if(elem.owner._id === profileId){
     deleteButton.style.display = 'block'
   }
 }

@@ -1,3 +1,17 @@
+// Функция очистки валидации
+export function clearValidation(profileForm, config) {
+  const inputList = Array.from(
+    profileForm.querySelectorAll(config.inputSelector)
+  );
+  const formButton = profileForm.querySelector(
+    config.submitButtonSelector
+  );
+  inputList.forEach((inputElement) => {
+    hideInputError(profileForm, inputElement, config);
+  });
+  toggleButtonState(inputList, formButton, config);
+}
+
 // Функция, которая добавляет класс с ошибкой
 function showInputError(formElement, inputElement, errorMessage, config) {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);

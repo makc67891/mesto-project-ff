@@ -1,7 +1,8 @@
 import "../pages/index.css";
 import { createPlacesItem, deletePlacesItem, likeCard } from "../components/card.js";
 import { openModal, closeModal } from "../components/modal.js";
-import { enableValidation, hideInputError, toggleButtonState } from "../components/validation.js";
+import { clearValidation, enableValidation } from "../components/validation.js";
+import { preloaderSaveButton } from '../components/utils.js'
 import { requestUserInfo, requestRenderCards, requestEditAvatar, requestUpdateUserInfo, requestAddNewCard, requestDeleteCard } from '../components/api.js'
 
 // DOM узлы
@@ -50,24 +51,8 @@ const validationConfig = {
   errorClass: "popup__input_error_active",
 };
 
-//////////////////////////////////////////////////////////////////////////
-
 // Вызов функции валидации
 enableValidation(validationConfig);
-
-// Функция очистки валидации
-function clearValidation(profileForm, config) {
-  const inputList = Array.from(
-    profileForm.querySelectorAll(config.inputSelector)
-  );
-  const formButton = profileForm.querySelector(
-    config.submitButtonSelector
-  );
-  inputList.forEach((inputElement) => {
-    hideInputError(profileForm, inputElement, config);
-  });
-  toggleButtonState(inputList, formButton, config);
-}
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -96,12 +81,12 @@ function handleAvatarFormSubmit(evt) {
   requestEditAvatar(formEditAvatar.link.value)
   .then((result) => {
     profileAvatar.style.backgroundImage = `url(${result.avatar})`;
+    closeModal(editAvatarPopup);
     preloaderSaveButton(editAvatarPopup);
   })
   .catch((err) => {
     console.log(err);
   });
-  closeModal(editAvatarPopup);
 }
 
 // Слушатель события формы редактирования аватара
@@ -129,12 +114,12 @@ function handleProfileFormSubmit(evt) {
     .then((result) => {
       profileTitle.textContent = result.name;
       profileDescription.textContent = result.about;
+      closeModal(editProfilePopup);
       preloaderSaveButton(editProfilePopup);
     })
     .catch((err) => {
       console.log(err);
     });
-  closeModal(editProfilePopup);
 }
 
 // Слушатель события формы редактирования профиля
@@ -160,12 +145,13 @@ function handleCardFormSubmit(evt) {
   requestAddNewCard(newCard.name, newCard.link)
     .then((result) => {
       renderCard(result);
+      
       preloaderSaveButton(addNewCardPopup);
     })
     .catch((err) => {
       console.log(err);
     });
-  closeModal(addNewCardPopup);
+    closeModal(addNewCardPopup);
 }
 
 // Слушатель события формы добавления новой карточки
@@ -183,11 +169,13 @@ function confirmRemove(elem) {
 function handleConfirmFormSubmit(evt){
   evt.preventDefault();
   requestDeleteCard(cardForDelete)
-    .then(() => deletePlacesItem(cardForDelete))
+    .then(() => {
+      deletePlacesItem(cardForDelete)
+      closeModal(confirmRemovePopup);
+    })
     .catch((err) => {
       console.log(err);
     });
-  closeModal(confirmRemovePopup);
 }
 
 // Слушатель события формы подтверждения удаления
@@ -221,18 +209,6 @@ allPopups.forEach((popup) => {
 
 //////////////////////////////////////////////////////////////////////////
 
-// Изменение состояния кнопки
-export function preloaderSaveButton(popup, flag = false) {
-  const btn = popup.querySelector(".popup__button");
-  if (flag) {
-    btn.textContent = "Сохранение...";
-  } else {
-    btn.textContent = "Сохранить";
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////
-
 Promise.all([requestUserInfo(), requestRenderCards()]).then(
   ([userInfo, cards]) => {
     profileId = userInfo._id;
@@ -243,4 +219,6 @@ Promise.all([requestUserInfo(), requestRenderCards()]).then(
       renderCard(card, "append");
     });
   }
-);
+).catch((err) => {
+  console.log(err);
+});
