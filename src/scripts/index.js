@@ -145,13 +145,12 @@ function handleCardFormSubmit(evt) {
   requestAddNewCard(newCard.name, newCard.link)
     .then((result) => {
       renderCard(result);
-      
+      closeModal(addNewCardPopup);
       preloaderSaveButton(addNewCardPopup);
     })
     .catch((err) => {
       console.log(err);
     });
-    closeModal(addNewCardPopup);
 }
 
 // Слушатель события формы добавления новой карточки
